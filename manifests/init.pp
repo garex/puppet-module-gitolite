@@ -9,11 +9,13 @@ class gitolite (
 
   group {"Add gitolite group":
     name    => $group,
+    ensure  => "present",
   }
 
   user {"Add gitolite user":
     require => Group["Add gitolite group"],
     name    => $user,
+    ensure  => "present",
     gid     => $group,
     home    => $home,
     comment => "Git repositories hosting management",
@@ -90,7 +92,7 @@ class gitolite (
   }
 
   exec {"Setup gitolite":
-    require     => Exec["Install gitolite"],
+    require     => [Exec["Install gitolite"], File["Set content of public key"]],
     cwd         => $home,
     environment => "HOME=$home",
     command     => "/usr/bin/gitolite setup -pk $home/gitolite.pub",
