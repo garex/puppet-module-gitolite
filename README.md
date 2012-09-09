@@ -1,12 +1,14 @@
 # Puppet module for adding gitolite management
 
-Manage gitolite instance with minimal possible dependencies.
+Manage gitolite instance with minimal possible dependencies. Can add hooks to repos: both for all repos and individually.
 
 ## Description
 
 Module adds gitolite role to node and *only* gitolite without gitweb and other stuff, that can be added independently.
 
 All you need is public key contents, that used during setup.
+
+You can have any hooks you want -- they all run in parallel.
 
 ### Dependencies
 
@@ -24,6 +26,8 @@ Currently we use for install direct git cloning -- not packages, as they are bug
 
 ## Usage
 
+### Add gitolite support
+
 ```ruby
 
     class {"gitolite":
@@ -33,6 +37,29 @@ Currently we use for install direct git cloning -- not packages, as they are bug
       user                => "gitolite",
       group               => "gitolite",
       home                => "/home/gitolite",
+    }
+
+```
+
+### Add hook to all repos
+
+```ruby
+
+    gitolite::hook {"Doing something on all repos at post-receive":
+      type        => "post-receive",
+      content     => "touch ~/i-am-post-receive-on-all-repos",
+    }
+
+```
+
+### Add hook to concrete repo
+
+```ruby
+
+    gitolite::hook {"Doing something in testing repo at post-receive":
+      type        => "post-receive",
+      content     => "touch ~/i-am-post-receive-in-testing-repo",
+      repository  => "testing",
     }
 
 ```
