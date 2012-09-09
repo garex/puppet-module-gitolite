@@ -101,4 +101,27 @@ class gitolite (
     user        => $user,
   }
 
+  $hooks_root = "${home}/.gitolite/hooks/common"
+  $hooks_generated_root = "${hooks_root}/.generated"
+  file {"Gitolite hooks autodirectory":
+    require => Exec["Setup gitolite"],
+    recurse => true,
+    force   => true,
+    purge   => true,
+    path    => $hooks_generated_root,
+    notify  => Exec["Apply gitolite hooks changes"],
+    ensure  => directory,
+    group   => $group,
+    owner   => $user,
+  }
+
+  exec {"Apply gitolite hooks changes":
+    cwd         => $home,
+    environment => "HOME=$home",
+    command     => "/usr/bin/gitolite setup",
+    group       => $group,
+    user        => $user,
+    refreshonly => true,
+  }
+
 }
