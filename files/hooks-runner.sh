@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 hookName=$(basename $0)
-hookPathStart=$GL_ADMIN_BASE/hooks/common/.generated/$hookName
-commonScope=$hookPathStart.common.*
-repositoryScope=$hookPathStart.repository.$(echo $GL_REPO | sed "s/\//-/g").*
+hooksRoot=$GL_ADMIN_BASE/hooks/common/.generated
+repositoryName=$(echo $GL_REPO | sed "s/\//-/g")
+hookPattern="^$hookName\.(common|repository\.$repositoryName)\."
 
-for hook in $(ls -1 $commonScope $repositoryScope)
+for hook in $(ls -1 $hooksRoot | egrep $hookPattern)
 do
-  . $hook
+  echo "Hooking $hook"
+  . $hooksRoot/$hook
 done
